@@ -2,10 +2,13 @@
   <div id="app">
     <div id="wrapper">
       <h1 id="title">德国心脏病</h1>
-      <MessageBox :gameMsg=gameMsg />
+      <div>
+        <MessageBox :gameMsg=gameMsg />
+        <div class="start-btn" v-show="isOwner && playerNum > 1" @click="start">开始</div>
+      </div>
       <Ring />
       <div id="cards">
-        <Card v-for="(card, index) in playerNum" :key="index" :cardData=card />
+        <Card v-for="(card, index) in inCards" :key="index" :cardData=card />
       </div>
       <div id="players">
         <Player
@@ -40,22 +43,40 @@ export default {
   data: () => {
     return {
       playerNum: 0,
+      inCards: [],
       players: [],
       ready: false,
       isLogin: false,
       showWindow: false,
+      isOwner: false,
       username: ""
     }
   },
   computed: {
     gameMsg() {
-      return this.ready ? "等待房主开始" : "请准备"
+      if (this.ready) {
+        if (this.isOwner && this.playerNum > 1) {
+          return "点击开始游戏"
+        } else if (this.isOwner) {
+          return "等待玩家"
+        } else {
+          return "等待房主开始"
+        }
+      } else {
+        return "请准备"
+      }
     }
   },
   methods: {
     changeReady() {
       if (!this.ready) {
         this.showWindow = true
+      }
+      if (this.ready) {
+        this.$socket.emit('logout', {
+          username: this.username
+        })
+        this.updatePlayers()
       }
       this.ready = !this.ready
     },
@@ -66,11 +87,32 @@ export default {
         })
         this.showWindow = false
         this.isLogin = true
+        this.updatePlayers()
       }
+    },
+    updatePlayers() {
+      this.sockets.subscribe('playerList', (data) => {
+        console.log(data)
+        this.playerNum = data.length
+        this.players = []
+        data.forEach(element => {
+          this.players.push({
+            name: element
+          })
+        });
+        if (data[0] === this.username) {
+          this.isOwner = true
+        }
+      })
+    },
+    start() {
+      this.$socket.emit('start')
+      console.log(this.playerNum);
     }
   },
   mounted() {
     this.$socket.emit('connection');
+    this.updatePlayers()
   },
   components: {
     MessageBox,
@@ -144,5 +186,17 @@ export default {
   position: relative;
   margin: 0 auto;
   top: 5%;
+}
+
+.start-btn {
+  position: absolute;
+  width: 20%;
+  font-size: 20px;
+  color: white;
+  background-color: red;
+  border: 1px solid black;
+  left: 50%;
+  top: 42%;
+  transform: translate(-50%, -50%);
 }
 </style>

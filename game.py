@@ -2,34 +2,34 @@ from player import Player
 import random
 import json
 
-class Game():
-    def __init__(self):
-        self.playerList = [] # 每个人初始的手牌 
-        self.playerNum = 0
-        self.deskCard = [] # 桌面上的牌
-        self.players = [] # 所有玩家
-        self.fruitNum = {'b':0, 'l':0, 'a':0, 'p':0} # 桌上的水果的总数
-        self.ring = 0 # 0的时候按铃就惩罚 1的时候按就奖励
-        self.status = 0 # 1表示游戏开始 0表示游戏未开始
+
+class Game:
+    def __init__(self, player_num, player_list):
+        self.playerList = player_list  # 每个人初始的手牌
+        self.playerNum = player_num
+        self.deskCard = []  # 桌面上的牌
+        self.players = []  # 所有玩家
+        self.fruitNum = {'b': 0, 'l': 0, 'a': 0, 'p': 0}  # 桌上的水果的总数
+        self.ring = 0  # 0的时候按铃就惩罚 1的时候按就奖励
+        self.status = 0  # 1表示游戏开始 0表示游戏未开始
 
     def start(self):
-        playerNum = int(input("Enter the number of players:"))
-        self.playerNum = playerNum
+        # playerNum = int(input("Enter the number of players:"))
+        # self.playerNum = playerNum
         for i in range(self.playerNum):
             a = Player()
             self.players.append(a)
-        self.dealCards(playerNum) #发牌
+        self.dealCards(self.playerNum)  # 发牌
         for j in range(self.playerNum):
             self.players[j].inCards = self.playerList[j]
         self.status = 1
 
-
     def dealCards(self, playerNum):
-        with open('./cards.json', 'r')  as load_f:
+        with open('./cards.json', 'r') as load_f:
             init_card = json.load(load_f)
         random.shuffle(init_card)
         unitCard = 56 // self.playerNum
-        while playerNum > 0 :
+        while playerNum > 0:
             self.playerList.append([])
             playerNum -= 1
         for i in range(0, self.playerNum):
@@ -58,19 +58,19 @@ class Game():
             aPlayer.outCards = []
         self.ring = 0
     
-    def Punish(self,player): # 惩罚
+    def punish(self,player): # 惩罚
         if len(player.inCards) >= self.playerNum-1: # 手牌够发给其他玩家
             for i in range(self.playerNum):
                 if i == self.players.index(player):
                     continue
                 else:
-                    card = player.inCards.pop() #一人发一张
+                    card = player.inCards.pop()  #一人发一张
                     self.players[i].inCards.append(card)
         else:
             if len(player.inCards) > 0: # 不够发但还有
                 for i in range(len(player.inCards)):
                     card = player.inCards.pop()
-                    self.deskCard.append(card) #全部反面向上 丢到桌子上（不改变桌上水果的数量）
+                    self.deskCard.append(card)  #全部反面向上 丢到桌子上（不改变桌上水果的数量）
             else:
                 player.outCards = [] # 没有手牌了还乱按铃 直接GG
                 self.checkSituation(player)
@@ -105,7 +105,7 @@ def main():
             print(i) # 玩家序号
             print(q.players[i].inCards) # 手牌
             hello = input("Enter 'd' to pop a card:")
-            if q.players[i].inCards != []: # 确保没有手牌了但打出去的牌还没被收走的玩家还有按铃的机会
+            if q.players[i].inCards != []:  # 确保没有手牌了但打出去的牌还没被收走的玩家还有按铃的机会
                 q.popCard(q.players[i])
             print(q.players[i].inCards)
             print(q.players[i].outCards)
@@ -114,7 +114,7 @@ def main():
             if hi != 'r': # 按r表示没人按铃
                 q.checkRing()
                 if q.ring == 0:
-                    q.Punish(q.players[int(hi)])
+                    q.punish(q.players[int(hi)])
                 else:
                     q.reward(q.players[int(hi)])
             print(q.deskCard)
@@ -126,4 +126,6 @@ def main():
             if q.status != 1:
                 break
 
-main()
+
+if __name__ == "__main__":
+    main()
