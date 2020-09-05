@@ -6,9 +6,14 @@ app.config['SECRET_KEY'] = 'secret!'
 socketio = SocketIO(app, cors_allowed_origins="*")
 
 
+@socketio.on('connection')
+def connection():
+    print('A user connected')
+
+
 @socketio.on('login')
 def login(data):
-    print('login username: ' + str(data['username']))
+    print(data['username'] + " is login")
 
 
 if __name__ == "__main__":

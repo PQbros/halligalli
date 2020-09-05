@@ -1,6 +1,6 @@
 <template>
   <div class="game-msg-box">
-    <span>{{  gameMsg }}</span>
+    <span>{{  gameMsg  }}</span>
   </div>
 </template>
 
@@ -15,13 +15,13 @@ export default {
 
 <style scoped>
 .game-msg-box {
-  width: 80%;
-  height: 5%;
+  width: 100%;
+  height: 8%;
   margin: 0 auto;
   text-align: center;
   background-color: #ccc;
   position: absolute;
-  top: 5vh;
+  top: 10%;
   left: 50%;
   transform: translateX(-50%);
 }
