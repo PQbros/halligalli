@@ -45,4 +45,12 @@
     <div id="app"></div>
     <!-- built files will be auto injected -->
   </body>
+  <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
+  <script>
+    var socket = io("http://localhost:5000");
+    socket.on('connect', function() {
+        socket.emit('my event', {data: 'I\'m connected!'});
+    });
+  </script>
 </html>
