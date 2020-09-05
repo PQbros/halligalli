@@ -1,20 +1,22 @@
 <template>
-  <div id="wrapper">
-    <MessageBox :gameMsg=gameMsg />
-    <Ring />
-    <div id="cards">
-      <Card v-for="player in playerNum" :key="player" :cardData=player />
-    </div>
-    <div id="players">
-      <Player
-        v-for="player in players"
-        :key="player"
-        :playerData=player
+  <div id="app">
+    <div id="wrapper">
+      <MessageBox :gameMsg=gameMsg />
+      <Ring />
+      <div id="cards">
+        <Card v-for="(card, index) in playerNum" :key="index" :cardData=card />
+      </div>
+      <div id="players">
+        <Player
+          v-for="(player, index) in players"
+          :key="index"
+          :playerData=player
+        />
+      </div>
+      <ReadyBtn
+        @changeready="changeReady"
       />
     </div>
-    <ReadyBtn
-      @changeready="changeReady"
-    />
   </div>
 </template>
 
@@ -56,6 +58,11 @@ export default {
     changeReady() {
       this.ready = !this.ready
     }
+  },
+  mounted() {
+    this.$socket.emit('login', {
+      username: "A"
+    });
   },
   components: {
     MessageBox,
