@@ -5,7 +5,8 @@ import json
 
 class Game:
     def __init__(self, player_num, player_list):
-        self.playerList = player_list  # 每个人初始的手牌
+        self.playerName = player_list
+        self.playerList = []  # 每个人初始的手牌
         self.playerNum = player_num
         self.deskCard = []  # 桌面上的牌
         self.players = []  # 所有玩家
@@ -37,18 +38,18 @@ class Game:
         
         return self.playerList
 
-    def popCard(self, player): # 打牌
+    def popCard(self, player):  # 打牌
         newCard = player.inCards.pop()
-        player.outCards.insert(0,newCard)
+        player.outCards.insert(0, newCard)
         self.deskCard.insert(0, newCard)
         self.fruitNum[newCard.get('fruit')] += newCard.get('number')
 
-    def checkRing(self): # 检查按铃是否正确
+    def checkRing(self):  # 检查按铃是否正确
         for value in self.fruitNum.values():
             if value >= 5:
                 self.ring = 1
 
-    def reward(self, player):# 奖励
+    def reward(self, player):  # 奖励
         for card in self.deskCard:
             player.inCards.append(card)
         random.shuffle(player.inCards)
@@ -58,25 +59,25 @@ class Game:
             aPlayer.outCards = []
         self.ring = 0
     
-    def punish(self,player): # 惩罚
-        if len(player.inCards) >= self.playerNum-1: # 手牌够发给其他玩家
+    def punish(self,player):  # 惩罚
+        if len(player.inCards) >= self.playerNum-1:  # 手牌够发给其他玩家
             for i in range(self.playerNum):
                 if i == self.players.index(player):
                     continue
                 else:
-                    card = player.inCards.pop()  #一人发一张
+                    card = player.inCards.pop()  # 一人发一张
                     self.players[i].inCards.append(card)
         else:
             if len(player.inCards) > 0: # 不够发但还有
                 for i in range(len(player.inCards)):
                     card = player.inCards.pop()
-                    self.deskCard.append(card)  #全部反面向上 丢到桌子上（不改变桌上水果的数量）
+                    self.deskCard.append(card)  # 全部反面向上 丢到桌子上（不改变桌上水果的数量）
             else:
                 player.outCards = [] # 没有手牌了还乱按铃 直接GG
                 self.checkSituation(player)
 
     def checkSituation(self, player):
-        if player is None: # GG的孩子
+        if player is None:  # GG的孩子
             return None
         if len(player.inCards) == 0 and len(player.outCards) == 0:
             self.players[self.players.index(player)] = None 
@@ -92,8 +93,9 @@ class Game:
             elif len(temp_list[0].inCards) < len(temp_list[1].inCards):
                 self.status = "{} wins!!".format(temp_list[1].name)
                 # 2 !!!
-            #else:
+            # else:
                 # 继续游戏
+
 
 def main():
     q = Game()
